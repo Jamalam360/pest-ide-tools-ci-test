@@ -42,6 +42,7 @@ runs:
         repo-token: ${{ inputs.secret }}
   
     - name: Install Rust Target
+      shell: bash
       if: ${{inputs.rust-target}}
       run: rustup target add ${{inputs.rust-target}}
 
