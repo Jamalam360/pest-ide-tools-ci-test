@@ -126,7 +126,7 @@ jobs:
         if: matrix.target.target == 'aarch64-unknown-linux-gnu'
         run: |
           sudo apt-get install gcc-aarch64-linux-gnu
-          export CARGO_TARGET_AARCH64_LINUX_GNU_LINKER="aarch64-linux-gnu-gcc"
+          echo "CARGO_TARGET_AARCH64_LINUX_GNU_LINKER=\"aarch64-linux-gnu-gcc\"" >> $GITHUB_ENV
 
       - name: Set up MacOS Cross Compiler
         if: matrix.target.os == 'darwin'
