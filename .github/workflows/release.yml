@@ -122,4 +122,4 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           file: "./pest-language-server-${{ matrix.os }}-${{ matrix.arch }}.tar.gz"
-          release_id: ${{ jobs.release.outputs.release_id }}
+          release_id: ${{ needs.release.outputs.release_id }}
