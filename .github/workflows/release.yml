@@ -98,8 +98,13 @@ jobs:
 
     strategy:
       matrix:
-        os: [ubuntu-latest, macos-latest, windows-latest]
-        arch: [x86_64]
+        target: [
+          { target: "aarch64-apple-darwin", os: darwin, arch: aarch64 },
+          { target: "aarch64-unknown-linux-gnu", os: linux, arch: aarch64 },
+          { target: "x86_64-apple-darwin", os: darwin, arch: x86_64 },
+          { target: "x86_64-pc-windows-msvc", os: windows, arch: x86_64 },
+          { target: "x86_64-unknown-linux-gnu", os: linux, arch: x86_64 },
+        ]
 
     steps:
       - name: Checkout code
@@ -112,14 +117,15 @@ jobs:
           secret: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build binary
-        run: cargo build --release --target=$TARGET
+        run: cargo build --release --target=${{ matrix.target.target }}
 
       - name: Package binary
-        run: tar -czvf pest-lsp-${{ matrix.os }}-${{ matrix.arch }}.tar.gz -C target/$TARGET/release/*
+        # needs to be in the form pest-language-server-$OS-$ARCH.tar.gz
+        run: tar -czvf pest-language-server-${{ matrix.target.os }}-${{ matrix.target.arch }}.tar.gz -C target/$TARGET/release/*
 
       - uses: xresloader/upload-to-github-release@main
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          file: "./pest-language-server-${{ matrix.os }}-${{ matrix.arch }}.tar.gz"
+          file: "./pest-language-server-${{ matrix.target.os }}-${{ matrix.target.arch }}.tar.gz"
           release_id: ${{ needs.release.outputs.release_id }}
