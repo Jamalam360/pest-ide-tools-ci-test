@@ -135,9 +135,13 @@ jobs:
       - name: Build binary
         run: cargo build --release --target=${{ matrix.target.target }}
 
-      - name: Package binary
-        # needs to be in the form pest-language-server-$OS-$ARCH.tar.gz
-        run: tar -czvf pest-language-server-${{ matrix.target.os }}-${{ matrix.target.arch }}.tar.gz -C target/$TARGET/release/*
+      - name: Package binary (Linux and Mac)
+        if: matrix.target.os != 'windows'
+        run: tar -zcvf pest-language-server-${{ matrix.target.os }}-${{ matrix.target.arch }}.tar.gz -C target/${{ matrix.target.target }}/release/pest-language-server
+
+      - name: Package binary (Windows)
+        if: matrix.target.os == 'windows'
+        run:  tar -zcvf pest-language-server-${{ matrix.target.os }}-${{ matrix.target.arch }}.tar.gz -C target/${{ matrix.target.target }}/release/pest-language-server.exe
 
       - uses: xresloader/upload-to-github-release@main
         env:
