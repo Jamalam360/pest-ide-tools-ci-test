@@ -115,7 +115,7 @@ jobs:
         with:
           kind: release-compile-binaries
           secret: ${{ secrets.GITHUB_TOKEN }}
-          target: ${{ matrix.target.target }}
+          rust-target: ${{ matrix.target.target }}
 
       - name: Build binary
         run: cargo build --release --target=${{ matrix.target.target }}
