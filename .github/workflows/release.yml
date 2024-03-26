@@ -124,7 +124,9 @@ jobs:
 
       - name: Set up aarch64 Linux
         if: matrix.target.target == 'aarch64-unknown-linux-gnu'
-        run: sudo apt-get install gcc-aarch64-linux-gnu
+        run: |
+          sudo apt-get install gcc-aarch64-linux-gnu
+          export CARGO_TARGET_AARCH64_LINUX_GNU_LINKER="aarch64-linux-gnu-gcc"
 
       - name: Set up MacOS Cross Compiler
         if: matrix.target.os == 'darwin'
