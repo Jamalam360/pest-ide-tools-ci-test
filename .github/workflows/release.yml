@@ -134,24 +134,24 @@ jobs:
         with:
           osx-version: "12.3"
 
-      # - name: Build binary
-      #   run: cargo build --release --target=${{ matrix.target.target }}
+      - name: Build binary
+        run: cargo build --release --target=${{ matrix.target.target }}
 
-      #   #TODO: remove
-      # - name: Debug Tree
-      #   run: tree target
+        #TODO: remove
+      - name: Debug Tree
+        run: tree target
 
-      # - name: Package binary (Linux and Mac)
-      #   if: matrix.target.os != 'windows'
-      #   run: tar -zcvf pest-language-server-${{ matrix.target.os }}-${{ matrix.target.arch }}.tar.gz -C target/${{ matrix.target.target }}/release pest-language-server
+      - name: Package binary (Linux and Mac)
+        if: matrix.target.os != 'windows'
+        run: tar -zcvf pest-language-server-${{ matrix.target.os }}-${{ matrix.target.arch }}.tar.gz -C target/${{ matrix.target.target }}/release pest-language-server
 
-      # - name: Package binary (Windows)
-      #   if: matrix.target.os == 'windows'
-      #   run: tar -zcvf pest-language-server-${{ matrix.target.os }}-${{ matrix.target.arch }}.tar.gz -C target/${{ matrix.target.target }}/release pest-language-server.exe
+      - name: Package binary (Windows)
+        if: matrix.target.os == 'windows'
+        run: tar -zcvf pest-language-server-${{ matrix.target.os }}-${{ matrix.target.arch }}.tar.gz -C target/${{ matrix.target.target }}/release pest-language-server.exe
 
-      # - uses: xresloader/upload-to-github-release@main
-      #   env:
-      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      #   with:
-      #     file: "./pest-language-server-${{ matrix.target.os }}-${{ matrix.target.arch }}.tar.gz"
-      #     release_id: ${{ needs.release.outputs.release_id }}
+      - uses: xresloader/upload-to-github-release@main
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          file: "./pest-language-server-${{ matrix.target.os }}-${{ matrix.target.arch }}.tar.gz"
+          release_id: ${{ needs.release.outputs.release_id }}
