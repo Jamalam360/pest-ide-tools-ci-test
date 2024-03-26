@@ -118,10 +118,13 @@ jobs:
           secret: ${{ secrets.GITHUB_TOKEN }}
           rust-target: ${{ matrix.target.target }}
 
-      - name: Install mingw
+      - name: Set up Windows
         if: matrix.target.os == 'windows'
-        run: |
-          sudo apt-get install -y mingw-w64
+        run: sudo apt-get install -y mingw-w64
+      
+      - name: Set up aarch64 Linux
+        if: matrix.target.target == 'aarch64-unknown-linux-gnu'
+        run: sudo apt-get install gcc-aarch64-linux-gnu
 
       - name: Set up Darwin
         if: matrix.target.os == 'darwin'
