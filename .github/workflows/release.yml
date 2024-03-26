@@ -140,11 +140,11 @@ jobs:
 
       - name: Package binary (Linux and Mac)
         if: matrix.target.os != 'windows'
-        run: tar -zcvf pest-language-server-${{ matrix.target.os }}-${{ matrix.target.arch }}.tar.gz -C target/${{ matrix.target.target }}/release/pest-language-server
+        run: tar -zcvf pest-language-server-${{ matrix.target.os }}-${{ matrix.target.arch }}.tar.gz target/${{ matrix.target.target }}/release/pest-language-server
 
       - name: Package binary (Windows)
         if: matrix.target.os == 'windows'
-        run: tar -zcvf pest-language-server-${{ matrix.target.os }}-${{ matrix.target.arch }}.tar.gz -C target/${{ matrix.target.target }}/release/pest-language-server.exe
+        run: tar -zcvf pest-language-server-${{ matrix.target.os }}-${{ matrix.target.arch }}.tar.gz target/${{ matrix.target.target }}/release/pest-language-server.exe
 
       - uses: xresloader/upload-to-github-release@main
         env:
