@@ -117,6 +117,11 @@ jobs:
           secret: ${{ secrets.GITHUB_TOKEN }}
           rust-target: ${{ matrix.target.target }}
 
+      - name: Install musl-tools
+        if: matrix.target.os == 'windows'
+        run: |
+          apt install musl-tools
+
       - name: Build binary
         run: cargo build --release --target=${{ matrix.target.target }}
 
