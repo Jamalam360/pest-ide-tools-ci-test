@@ -121,7 +121,7 @@ jobs:
       - name: Set up Windows
         if: matrix.target.os == 'windows'
         run: sudo apt-get install -y --no-install-recommends mingw-w64 musl-tools gcc-mingw-w64-x86-64-win32
-      
+
       - name: Set up aarch64 Linux
         if: matrix.target.target == 'aarch64-unknown-linux-gnu'
         run: sudo apt-get install gcc-aarch64-linux-gnu
@@ -135,13 +135,16 @@ jobs:
       - name: Build binary
         run: cargo build --release --target=${{ matrix.target.target }}
 
+      - name: Debug Tree
+        run: tree target
+
       - name: Package binary (Linux and Mac)
         if: matrix.target.os != 'windows'
         run: tar -zcvf pest-language-server-${{ matrix.target.os }}-${{ matrix.target.arch }}.tar.gz -C target/${{ matrix.target.target }}/release/pest-language-server
 
       - name: Package binary (Windows)
         if: matrix.target.os == 'windows'
-        run:  tar -zcvf pest-language-server-${{ matrix.target.os }}-${{ matrix.target.arch }}.tar.gz -C target/${{ matrix.target.target }}/release/pest-language-server.exe
+        run: tar -zcvf pest-language-server-${{ matrix.target.os }}-${{ matrix.target.arch }}.tar.gz -C target/${{ matrix.target.target }}/release/pest-language-server.exe
 
       - uses: xresloader/upload-to-github-release@main
         env:
