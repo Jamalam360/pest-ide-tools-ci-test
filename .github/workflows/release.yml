@@ -17,7 +17,8 @@ jobs:
       release_id: ${{ steps.create_release.outputs.id }}
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
+
       - name: Setup
         uses: ./.github/actions/setup
         with:
@@ -62,12 +63,12 @@ jobs:
 
       - name: Create Release
         id: create_release
-        uses: actions/create-release@v1
+        uses: softprops/action-gh-release@v2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tag_name: ${{ github.ref }}
-          release_name: ${{ github.ref }}
+          name: ${{ github.ref }}
           body: |
             # Checklist Before Publishing
 
@@ -90,7 +91,7 @@ jobs:
 
   build-binaries:
     needs: release
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.target.runner }}
 
     permissions:
       # So we can upload to the release
@@ -100,16 +101,16 @@ jobs:
       matrix:
         target:
           [
-            { target: "aarch64-apple-darwin", os: darwin, arch: aarch64 },
-            { target: "aarch64-unknown-linux-gnu", os: linux, arch: aarch64 },
-            { target: "x86_64-apple-darwin", os: darwin, arch: x86_64 },
-            { target: "x86_64-pc-windows-gnu", os: windows, arch: x86_64 },
-            { target: "x86_64-unknown-linux-gnu", os: linux, arch: x86_64 },
+            { runner: "macos-14", target: "aarch64-apple-darwin", os: darwin, arch: aarch64 }, # Apple silicon
+            { runner: "ubuntu-latest", target: "aarch64-unknown-linux-gnu", os: linux, arch: aarch64 },
+            { runner: "macos-12", target: "x86_64-apple-darwin", os: darwin, arch: x86_64 }, # Intel Mac
+            { runner: "ubuntu-latest", target: "x86_64-pc-windows-gnu", os: windows, arch: x86_64 }, # It's trivial to cross-compile to Windows (less so for Mac)
+            { runner: "ubuntu-latest", target: "x86_64-unknown-linux-gnu", os: linux, arch: x86_64 },
           ]
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
       - name: Setup
         uses: ./.github/actions/setup
@@ -128,18 +129,14 @@ jobs:
           sudo apt-get install gcc-aarch64-linux-gnu
           echo "CARGO_TARGET_AARCH64_UNKNOWN_LINUX_GNU_LINKER=aarch64-linux-gnu-gcc" >> $GITHUB_ENV
 
-      - name: Set up MacOS Cross Compiler
-        if: matrix.target.os == 'darwin'
-        uses: Timmmm/setup-osxcross@v2
-        with:
-          osx-version: "12.3"
+      # - name: Set up Darwin
+      #   if: matrix.target.os == 'darwin'
+      #   uses: Timmmm/setup-osxcross@v2
+      #   with:
+      #     osx-version: "12.3"
 
       - name: Build binary
         run: cargo build --release --target=${{ matrix.target.target }}
-
-        #TODO: remove
-      - name: Debug Tree
-        run: tree target
 
       - name: Package binary (Linux and Mac)
         if: matrix.target.os != 'windows'
@@ -149,7 +146,7 @@ jobs:
         if: matrix.target.os == 'windows'
         run: tar -zcvf pest-language-server-${{ matrix.target.os }}-${{ matrix.target.arch }}.tar.gz -C target/${{ matrix.target.target }}/release pest-language-server.exe
 
-      - uses: xresloader/upload-to-github-release@main
+      - uses: xresloader/upload-to-github-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
